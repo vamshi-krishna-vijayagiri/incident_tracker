@@ -1,0 +1,33 @@
+services:
+  # Backend API
+  backend:
+    build:
+      context: ./inc-backend
+      dockerfile: Dockerfile
+    container_name: incident-tracker-backend
+    ports:
+      - "5000:5000"
+    env_file:
+      - /inc-backend/.env  
+    networks:
+      - incident-tracker-network
+
+  # Frontend UI
+  frontend:
+    build:
+      context: ./inc-frontend
+      dockerfile: Dockerfile
+    container_name: incident-tracker-frontend
+    ports:
+      - "4001:4001"
+    env_file:
+      - /inc-frontend/.env  
+    depends_on:
+      - backend
+    networks:
+      - incident-tracker-network
+    restart: unless-stopped
+
+networks:
+  incident-tracker-network:
+    driver: bridge
