@@ -38,10 +38,12 @@ export const updateIncident = async (
 };
 
 export const deleteIncident = async (
-  incidentNumber: string
+  incidentNumber: string,
+  deletedBy?: string | null
 ): Promise<void> => {
   await apiClient.delete(
-    `/incidents/${encodeURIComponent(incidentNumber)}`
+    `/incidents/${encodeURIComponent(incidentNumber)}`,
+    { data: { deletedBy: deletedBy || null } }
   );
 };
 

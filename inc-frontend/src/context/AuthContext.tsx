@@ -1,9 +1,10 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { apiClient } from "../utils/api";
 
 interface AuthContextValue {
   isAuthenticated: boolean;
   username: string | null;
+  loading: boolean;
   login: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
 }
@@ -15,6 +16,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUsername] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // Restore auth state from localStorage on mount
+  useEffect(() => {
+    const storedUsername = localStorage.getItem("username");
+    const storedIsAuthenticated = localStorage.getItem("isAuthenticated");
+    
+    if (storedIsAuthenticated === "true" && storedUsername) {
+      setIsAuthenticated(true);
+      setUsername(storedUsername);
+    }
+    setLoading(false);
+  }, []);
 
   const login = async (usernameInput: string, password: string) => {
     try {
@@ -26,6 +40,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       if (response.data.success) {
         setIsAuthenticated(true);
         setUsername(response.data.username);
+        // Persist to localStorage
+        localStorage.setItem("isAuthenticated", "true");
+        localStorage.setItem("username", response.data.username);
         return true;
       }
 
@@ -39,11 +56,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const logout = () => {
     setIsAuthenticated(false);
     setUsername(null);
+    // Clear localStorage
+    localStorage.removeItem("isAuthenticated");
+    localStorage.removeItem("username");
   };
 
   const value: AuthContextValue = {
     isAuthenticated,
     username,
+    loading,
     login,
     logout,
   };

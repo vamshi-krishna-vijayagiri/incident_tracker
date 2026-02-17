@@ -2,11 +2,11 @@ const express = require("express");
 const router = express.Router();
 const { pool } = require("../db");
 
-// Get all incidents
+// Get all incidents (excludes soft-deleted incidents)
 router.get("/", async (req, res) => {
   try {
     const [rows] = await pool.execute(
-      "SELECT * FROM incidents ORDER BY id ASC"
+      "SELECT * FROM incidents WHERE deletedAt IS NULL ORDER BY id ASC"
     );
     res.json(rows);
   } catch (err) {
@@ -15,11 +15,11 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Get single incident by incidentNumber
+// Get single incident by incidentNumber (excludes soft-deleted incidents)
 router.get("/:incidentNumber", async (req, res) => {
   try {
     const [rows] = await pool.execute(
-      "SELECT * FROM incidents WHERE incidentNumber = ?",
+      "SELECT * FROM incidents WHERE incidentNumber = ? AND deletedAt IS NULL",
       [req.params.incidentNumber]
     );
     if (rows.length === 0) {
@@ -118,14 +118,15 @@ router.put("/:incidentNumber", async (req, res) => {
   }
 });
 
-// Delete incident by incidentNumber
+// Soft delete incident by incidentNumber
 router.delete("/:incidentNumber", async (req, res) => {
   const { incidentNumber } = req.params;
+  const { deletedBy } = req.body;
 
   try {
     const [result] = await pool.execute(
-      "DELETE FROM incidents WHERE incidentNumber = ?",
-      [incidentNumber]
+      "UPDATE incidents SET deletedAt = CURRENT_TIMESTAMP, deletedBy = ? WHERE incidentNumber = ? AND deletedAt IS NULL",
+      [deletedBy || null, incidentNumber]
     );
 
     if (result.affectedRows === 0) {

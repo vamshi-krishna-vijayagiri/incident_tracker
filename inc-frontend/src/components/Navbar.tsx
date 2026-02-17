@@ -21,7 +21,7 @@ const Navbar = () => {
       <AppBar position="fixed">
         <Toolbar>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            Incident Tracker
+             Velaris Incident Tracker
           </Typography>
 
           <Tooltip title="Logout">

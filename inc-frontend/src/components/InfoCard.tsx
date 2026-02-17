@@ -18,12 +18,12 @@ const InfoCard: React.FC<InfoCardProps> = ({
   maxWidth = 400,
 }) => {
   return (
-    <Card sx={{ maxWidth }}>
+    <Card sx={{ maxWidth, height: "70px" }}>
       <CardActionArea>
-        <CardContent>
+        <CardContent sx={{ padding: "6px 16px", height: "100%" }}>
           <Typography
             color="text.secondary"
-            mb={1}
+            mb={0.5}
           >
             {title}
           </Typography>

@@ -31,7 +31,9 @@ async function initDb() {
       status VARCHAR(50) NOT NULL,
       assignedDate VARCHAR(50) NOT NULL,
       expectedToComplete VARCHAR(50) NOT NULL,
-      completedDate VARCHAR(50) NOT NULL
+      completedDate VARCHAR(50) NOT NULL,
+      deletedAt TIMESTAMP NULL DEFAULT NULL,
+      deletedBy VARCHAR(255) NULL
     )
   `);
 
