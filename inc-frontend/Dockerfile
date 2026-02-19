@@ -3,6 +3,12 @@ FROM node:18-alpine AS builder
 
 WORKDIR /app
 
+# Accept build arguments
+ARG REACT_APP_API_URL
+
+# Set environment variables from args
+ENV REACT_APP_API_URL=${REACT_APP_API_URL}
+
 # Copy package files
 COPY package*.json ./
 
@@ -14,7 +20,7 @@ COPY public ./public
 COPY src ./src
 COPY tsconfig.json ./
 
-# Build the application
+# Build the application with environment variables
 RUN npm run build
 
 # Production stage

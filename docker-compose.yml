@@ -4,24 +4,28 @@ services:
     build:
       context: ./inc-backend
       dockerfile: Dockerfile
+    image: inc-backend:latest
     container_name: incident-tracker-backend
     ports:
       - "5000:5000"
     env_file:
-      - /inc-backend/.env  
+      - ./inc-backend/.env.docker
     networks:
       - incident-tracker-network
+    environment:
+      - DB_HOST=host.docker.internal
 
   # Frontend UI
   frontend:
     build:
       context: ./inc-frontend
       dockerfile: Dockerfile
+      args:
+        - REACT_APP_API_URL=http://localhost:5000/api
+    image: inc-frontend:latest
     container_name: incident-tracker-frontend
     ports:
       - "4001:4001"
-    env_file:
-      - /inc-frontend/.env  
     depends_on:
       - backend
     networks:
